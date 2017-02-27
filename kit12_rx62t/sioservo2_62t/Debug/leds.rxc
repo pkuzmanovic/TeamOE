@@ -1,0 +1,9 @@
+-cpu=rx600
+-endian=big
+-lang=c
+-output=obj="C:\WorkSpace\kit12_rx62t\sioservo2_62t\Debug\leds.obj"
+-debug
+-section=L=C
+-volatile
+"C:\WorkSpace\kit12_rx62t\sioservo2_62t\leds.c"
+-nologo

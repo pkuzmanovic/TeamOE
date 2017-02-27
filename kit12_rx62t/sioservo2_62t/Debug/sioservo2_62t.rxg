@@ -1,0 +1,4 @@
+-cpu=rx600
+-endian=big
+-output="C:\WorkSpace\kit12_rx62t\sioservo2_62t\Debug\sioservo2_62t.lib"
+-head=runtime,ctype,math,mathf,stdarg,stdio,stdlib,string,ios,new,complex,cppstring
