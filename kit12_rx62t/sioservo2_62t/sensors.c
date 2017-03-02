@@ -16,7 +16,6 @@ unsigned char sensor_inp( unsigned char mask )
     sensor  = ~PORT4.PORT.BYTE;
 	
 	sensor = (USE_INVERTED_LOGIC) ? (~sensor) : (sensor);
-	//sensor = (USE_INVERTED_LOGIC) ? (sensor) : (~sensor);
 
     sensor &= mask;
 
@@ -44,11 +43,10 @@ unsigned char startbar_get( void )
 int check_crossline( void )
 {
     unsigned char b;
-    int ret;
+    int ret = 0;
 
     ret = 0;
-    //b = sensor_inp(MASK4_4);
-	b = sensor_filtered;
+    b = sensor_filtered;
     if( b==CROSSLINE ) {
         ret = 1;
     }
@@ -62,11 +60,10 @@ int check_crossline( void )
 int check_rightline( void )
 {
     unsigned char b;
-    int ret;
+    int ret = 0;
 
     ret = 0;
-   // b = sensor_inp(MASK1_4 /*MASK4_4*/);
-	b = sensor_filtered;
+  	b = sensor_filtered;
     if(  b==RIGHTLINE1 || b==RIGHTLINE2 ) {
         ret = 1;
     }
@@ -80,11 +77,10 @@ int check_rightline( void )
 int check_leftline( void )
 {
     unsigned char b;
-    int ret;
+    int ret = 0;
 
-    ret = 0;
-    //b = sensor_inp(MASK4_1 /*MASK4_4*/);
-	b = sensor_filtered;
+    //ret = 0;
+    b = sensor_filtered;
     if( b==LEFTLINE1 || b==LEFTLINE2 ) {
         ret = 1;
     }
@@ -98,10 +94,9 @@ int check_leftline( void )
 int check_noline( void )
 {
     unsigned char b;
-    int ret;
+    int ret = 0;
 
-    ret = 0;
-    //b = sensor_inp(MASK4_4);
+    //ret = 0;
 	b = sensor_filtered;
     if( b==NOLINE ) {
         ret = 1;

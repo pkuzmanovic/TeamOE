@@ -818,8 +818,14 @@
 "C:\WorkSpace\kit12_rx62t\sioservo2_62t\sensors.c" 
 "C:\WorkSpace\kit12_rx62t\sioservo2_62t\sensors.h" 
 "C:\WorkSpace\kit12_rx62t\sioservo2_62t\process.c" 
-"C:\WorkSpace\kit12_rx62t\sioservo2_62t\init.c" 
+"C:\WorkSpace\kit12_rx62t\sioservo2_62t\switches.h" 
+"C:\WorkSpace\kit12_rx62t\sioservo2_62t\init.h" 
+"C:\WorkSpace\kit12_rx62t\sioservo2_62t\motors.h" 
+"C:\WorkSpace\kit12_rx62t\sioservo2_62t\leds.h" 
+"C:\WorkSpace\kit12_rx62t\sioservo2_62t\switches.c" 
 "C:\WorkSpace\kit12_rx62t\sioservo2_62t\motors.c" 
+"C:\WorkSpace\kit12_rx62t\sioservo2_62t\leds.c" 
+"C:\WorkSpace\kit12_rx62t\sioservo2_62t\dbsct.c" 
 [TARGET_NAME]
 "" "" 0 
 [STATUSBAR_STATEINFO_VD1]

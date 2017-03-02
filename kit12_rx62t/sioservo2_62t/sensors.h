@@ -1,7 +1,11 @@
 #ifndef _sensors_h_
 #define _sensors_h_
 
-#define USE_INVERTED_LOGIC 1 // 0 for standard logic, 1 for inverted
+/* MAKRO ZA LOGIKU SENZORA
+ * 0 - for standard logic 
+ * 1 - for inverted
+ */
+#define USE_INVERTED_LOGIC 1 
 
 /* Masked value settings X:masked (disabled) O:not masked (enabled) */
 #define MASK2_2         0x66            /* X O O X  X O O X            */
@@ -24,13 +28,51 @@
 #define LEFTLINE2		0xf0            /* X X X X  O O O O            */
 #define NOLINE			0x00            /* 0 0 0 0  0 O O O            */
 
+
+/*
+ * funkcija koja proverava stanje dioda maskiranih sa prosledjenom maskom
+ * 
+ * Output - stanje maskranih senzora
+ * 			0x00 : 0xff
+ */
 unsigned char sensor_inp( unsigned char mask );
 
+
+/*
+ * Posmatra stanje startbar senzora
+ *
+ * Output: ON/OFF
+ */
 unsigned char startbar_get( void );
 
+
+/*
+ * Dtektuje crossline - pred lakat krivine
+ *
+ * Output: ON/OFF
+ */
 int check_crossline( void );
+
+/*
+ * Detektuje RIGHTLINE1 ili RIGHTLINE2
+ *
+ * Output: ON/OFF
+ */
 int check_rightline( void );
+
+/*
+ * Detektuje LEFTLINE1 ili LEFTTLINE2
+ *
+ * Output: ON/OFF
+ */
 int check_leftline( void );
+
+
+/*
+ * Proverava kada ne postoji linije
+ *
+ * Output: ON/OFF
+ */
 int check_noline( void );
 
 #endif
