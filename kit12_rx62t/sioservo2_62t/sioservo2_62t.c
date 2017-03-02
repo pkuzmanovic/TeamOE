@@ -7,10 +7,10 @@
 
 #include "iodefine.h"
 
-#define K 2
+#define K 1
 
 // filtering buffer length
-#define BUFF_LENGTH 3
+#define BUFF_LENGTH 9
 
 volatile unsigned long cnt0 = 0;
 volatile unsigned long cnt1 = 0;
@@ -18,16 +18,17 @@ volatile unsigned long cnt2 = 0;
 volatile unsigned long cnt3 = 0;
 
 // keep track of the last 9 sensor configurations
-volatile int sensor_buff[BUFF_LENGTH] = {0};
+volatile int sensor_buff[BUFF_LENGTH] = {{0}};
 // sums of the last 9 sensor configurations, by bits
-volatile int sensor_sums[8] = {0};
+volatile int sensor_sums[8] = {{0}};
 // slow-changing sensor configuration
 volatile int sensor_filtered = 0x18;
+volatile int sensor_last = 0x00;
 // buffer counter
 volatile int sensor_head = 0;
 
 volatile int angle = 0;
-volatile int lvl = 20;
+//volatile int lvl = 20;
 
 volatile int accele_l = 0;
 volatile int accele_r = 0;
@@ -110,26 +111,24 @@ void Excep_CMT0_CMI0(void)
 	
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%
 	// FILTRIRANJE
+	// trenutna vrednost
 	sensor_cur = sensor_inp(MASK4_4);
+	// pamtimo
 	sensor_buff[sensor_head] = sensor_cur;
+	// poslednje ubaceni bafer
+	sensor_last = (sensor_head!=BUFF_LENGTH-1) ? sensor_buff[sensor_head+1] : sensor_buff[0];
+	// filtriranje
+	sensor_filtered = 0;
 	for (i = 0; i < 8; i++) {
-		sensor_sums[i] += (( sensor_cur & (1 << i)) >> i);
-	}
-	
-	if (sensor_head == BUFF_LENGTH-1) {
-		sensor_filtered = 0;
-		for (i = 0; i < 8; i++) {
-			if (sensor_sums[i] > (double)(BUFF_LENGTH/2)) {
-				sensor_sums[i] = 0; // prepare for next filtering
-				sensor_filtered += (1 << i);
-			}
+		sensor_sums[i] -= (( sensor_last & (1 << i)) >> i);  // izbacujemo poslednji
+		sensor_sums[i] += (( sensor_cur & (1 << i)) >> i);  // izbacujemo poslednji
+		if (sensor_sums[i] > (double)(BUFF_LENGTH/2)) {
+			//sensor_sums[i] = 0; // prepare for next filtering
+			sensor_filtered += (1 << i);
 		}
-		sensor_head = (sensor_head + 1) % BUFF_LENGTH;
 	}
-	else {
-		sensor_head = (sensor_head + 1) % BUFF_LENGTH;
-		//return; // dont go to machine state
-	}
+	// counter++
+	sensor_head = (sensor_head + 1) % BUFF_LENGTH;
 	// FILTRIRANJE
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
@@ -285,13 +284,57 @@ void Excep_CMT0_CMI0(void)
 				   
 			   default :
 			   	   // stop
-			   	   angle = 0;
+			   	   /*angle = 0;
 				   accele_l = 0;
-				   accele_r = 0;
+				   accele_r = 0;*/
 				   break;
 				 
 		}
 			break;
+			
+		case 23: // TURN 90, left/right?
+			accele_l = 40;
+			accele_r = 40;
+			break;
+		
+		/*case 24:
+			accele_l = 40;
+			accele_r = 40;
+			angle = +20;
+			break;*/
+			
+		case 25: // TURN 90, right!
+			accele_l = 40;
+			accele_r = 40;
+			angle = 0;
+			break;
+			
+		/*case 26:
+			accele_l = 40;
+			accele_r = 40;
+			angle = -20;
+			break;*/
+			
+		case 27: // TURN 90, left!
+			accele_l = 40;
+			accele_r = 40;
+			angle = 0;
+			break;
+			
+			
+		case 28: // TURN 90, right!
+			accele_l = 25;
+			accele_r = 50;
+			angle = -35;
+			break;
+			
+		case 29: // TURN 90, left!
+			accele_l = 50;
+			accele_r = 25;
+			angle = 35;
+			break;
+		
+		
 		case 33: // change lane, right
 			// slow down (later, make it slow down gradually, not immediately)
 			//angle = 0;

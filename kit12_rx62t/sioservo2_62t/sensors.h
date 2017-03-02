@@ -14,6 +14,9 @@
 #define MASK0_4         0x0f            /* X X X X  O O O O            */
 #define MASK4_4         0xff            /* O O O O  O O O O            */
 
+#define MASK4_1         0xf8            /* O O O O  O X X X            */
+#define MASK1_4         0x1f            /* X X X O  O O O O            */
+
 #define CROSSLINE		0xff 			/* X X X X  X X X X            */
 #define RIGHTLINE		0x1f		  	/* O O O X  X X X X            */
 #define LEFTLINE		0xf8            /* X X X X  X O O O            */

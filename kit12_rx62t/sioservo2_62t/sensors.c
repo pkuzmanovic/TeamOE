@@ -2,6 +2,8 @@
 
 #include "iodefine.h"
 
+extern volatile int sensor_filtered;
+
 /***********************************************************************/
 /* Sensor state detection                                              */
 /* Arguments:       masked values                                      */
@@ -45,7 +47,8 @@ int check_crossline( void )
     int ret;
 
     ret = 0;
-    b = sensor_inp(MASK4_4);
+    //b = sensor_inp(MASK4_4);
+	b = sensor_filtered;
     if( b==CROSSLINE ) {
         ret = 1;
     }
@@ -62,7 +65,8 @@ int check_rightline( void )
     int ret;
 
     ret = 0;
-    b = sensor_inp(MASK4_4);
+   // b = sensor_inp(MASK1_4 /*MASK4_4*/);
+	b = sensor_filtered;
     if( b==RIGHTLINE ) {
         ret = 1;
     }
@@ -79,7 +83,8 @@ int check_leftline( void )
     int ret;
 
     ret = 0;
-    b = sensor_inp(MASK4_4);
+    //b = sensor_inp(MASK4_1 /*MASK4_4*/);
+	b = sensor_filtered;
     if( b==LEFTLINE ) {
         ret = 1;
     }
@@ -96,7 +101,8 @@ int check_noline( void )
     int ret;
 
     ret = 0;
-    b = sensor_inp(MASK4_4);
+    //b = sensor_inp(MASK4_4);
+	b = sensor_filtered;
     if( b==NOLINE ) {
         ret = 1;
     }

@@ -11,6 +11,275 @@ extern int pattern;
 extern volatile int accele_l;
 extern volatile int accele_r;
 
+extern volatile int sensor_filtered;
+
+int BROJAC = 0;
+
+void process_1() { // ours
+	switch( pattern ) {
+		/****************************************************************
+        Pattern-related
+         00: wait for switch input
+		 01: check if start bar is open
+         10: drive
+		 20 - 29 : 90 degree turn
+		 30 - 39 : changing track right
+		 40 - 49 : changing track left
+        ****************************************************************/
+		case 00:
+			/* Wait for switch input */
+            if( pushsw_get() ) {
+                //pattern = 01;
+				pattern = 10; // straight to 10 for now, no startbar checking
+				led_out( 0x0 );
+                cnt0 = 0;
+                break;
+            }
+            
+			/*if( cnt0 < 100 ) {          //LED flashing processing
+                led_out( 0x1 );
+            } else if( cnt0 < 200 ) {
+                led_out( 0x2 );
+            } else {
+                cnt0 = 0;
+            }*/
+			
+			BROJAC++;
+			
+			if (BROJAC < 10000000) led_out(0x1);
+			else if (BROJAC < 20000000) led_out(0x0);
+			else BROJAC = 0;
+			
+            break;
+			
+		case 01:
+            /* Check if start bar is open */
+            if( !startbar_get() ) {
+                /* Start!! */
+                led_out( 0x0 );
+                pattern = 10;
+                cnt0 = 0;
+                break;
+            }
+            if( cnt0 < 50 ) {           /* LED flashing processing     */
+                led_out( 0x1 );
+            } else if( cnt0 < 100 ) {
+                led_out( 0x2 );
+            } else {
+                cnt0 = 0;
+            }
+            break;
+		case 10:    // NAJBOLJE DA STOJI CASE STRUKTURA ISPOD, PROMENITI
+			
+			// all two diodies blink
+			led_out( 0x3 );
+			
+			/* Drive */
+			if( check_crossline() ) {   // Cross line check            
+                pattern = 20;
+                break;
+            }
+            if( check_rightline() ) {   // Right half line detection check
+                pattern = 30;
+                break;
+            }
+            if( check_leftline() ) {    // Left half line detection check
+                pattern = 40;
+                break;
+            }
+			if ( check_noline() ) {
+				// stop
+				accele_l = 0;
+				accele_r = 0;
+				break;
+			}
+				
+		   break;
+		  
+		case 20:
+			// ne znamo jos, skretanje po 90 stepeni (levo, desno? brojimo...)
+			
+			// videli smo jedan CROOSSLINE
+			if (sensor_inp(MASK3_3) == 0x00)
+				pattern = 21;
+			break;
+		
+		case 21:
+			// cekamo drugi CROSSLINE
+			if (check_crossline())
+				pattern = 22;
+			break;
+		
+		case 22:
+			// videli smo i drugi CROSSLINE
+			if (sensor_inp(MASK3_3) == 0x00)
+				pattern = 23;
+			break;
+		
+		case 23:
+			// turn off both diodes
+			led_out( 0x0 );
+			
+			// TURN 90, left/right?
+			if ( check_leftline() ) {
+				//pattern = 24;
+				pattern = 25;
+				break;
+			}
+			if ( check_rightline() ) {
+				//pattern = 26;
+				pattern = 27;
+				break;
+			}
+			
+			break;
+			
+		/*case 24:
+			// wait for the blanko, to start turn
+			if (sensor_inp(MASK0_4) == 0x01) { 
+				pattern = 25;
+			}
+			break;*/
+		
+		case 25:
+			// wait for the line, then continue to drive
+			if (check_noline() /*sensor_inp(MASK4_4) == 0x18*/) { // wait for the end of line
+				//pattern = 10;
+				pattern = 28;
+			}
+			break;
+		/*case 26:
+			// wait for the blanko, to start turn
+			if (sensor_inp(MASK4_0) == 0x80) { 
+				pattern = 27;
+			}
+			break;*/
+		
+		case 27:
+			// wait for the line, then continue to drive
+			if (check_noline() /*sensor_inp(MASK4_4) == 0x18*/) { // wait for the end of line
+				//pattern = 10;
+				pattern = 29;
+			}
+			break;
+			
+		case 28:
+			// wait for the line, then continue to drive
+			if (sensor_inp(MASK4_4) == 0x18) { // wait for the 2 central LEDs
+				pattern = 10;
+			}
+			break;
+		
+		case 29:
+			// wait for the line, then continue to drive
+			if (sensor_inp(MASK4_4) == 0x18) { // wait for the 2 central LEDs
+				pattern = 10;
+			}
+			break;
+		
+		case 30:
+			// videli smo jedan RIGHTLINE
+			if (sensor_inp(MASK3_3) == 0x00)
+				pattern = 31;
+			break;
+			
+		case 31:
+			// cekamo drugi RIGHTLINE
+			if (check_rightline())
+				pattern = 32;
+			break;
+		
+		case 32:
+			// videli smo i drugi RIGHTLINE
+			if (sensor_inp(MASK3_3) == 0x00)
+				pattern = 33;
+			break;
+		
+		case 33:
+		
+			// diode 1 blinks
+			led_out( 0x1 );
+			
+			// CHANGE LANE, RIGHT
+			if (sensor_inp(MASK4_4) == 0x00) { // all black
+				pattern = 34;
+			}
+			break;
+			
+		case 34:
+			// wait for the line, then turn left
+			if (sensor_inp(0x18) == 0x18) { // wait for the 2 central LEDs
+				pattern = 35;
+			}
+			break;
+			
+		case 35:
+			if (sensor_inp(MASK3_3) == 0x00) { // wait for the formula to catch the line properly, then go back to pattern 10
+				pattern = 10;
+			}
+			
+		
+		case 40:
+			// videli smo jedan LEFTLINE
+			if (sensor_inp(MASK3_3) == 0x00)
+				pattern = 41;
+			break;
+			
+		case 41:
+			// cekamo drugi LEFTLINE
+			if (check_leftline())
+				pattern = 42;
+			break;
+		
+		case 42:
+			// videli smo i drugi LEFTLINE
+			if (sensor_inp(MASK3_3) == 0x00)
+				pattern = 43;
+			break;
+		
+		case 43:
+			// diode 2 blinks
+			led_out( 0x2 );
+			
+			// CHANGE LANE, LEFT
+			if (sensor_inp(MASK4_4) == 0x00) { // all black
+				pattern = 44;
+			}
+			break;
+			
+		case 44:
+			// wait for the line, then turn right
+			if (sensor_inp(0x18) == 0x18) { // wait for the 2 central LEDs
+				pattern = 45;
+			}
+			break;
+			
+		case 45:
+			if (sensor_inp(MASK3_3) == 0x00) { // wait for the formula to catch the line properly, then go back to pattern 10
+				pattern = 10;
+			}
+		
+		default:
+		   break;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// NJI'OVO
+
+
 void process_0() { // default
 	switch( pattern ) {
 
@@ -38,6 +307,7 @@ void process_0() { // default
         64: left lane change end check
         ****************************************************************/
 
+
         case 0:
             /* Wait for switch input */
             if( pushsw_get() ) {
@@ -52,6 +322,9 @@ void process_0() { // default
             } else {
                 cnt1 = 0;
             }*/
+			
+		
+			
             break;
 
         case 1:
@@ -411,177 +684,5 @@ void process_0() { // default
             /* If neither, return to standby state */
             pattern = 0;
             break;
-	}
-}
-
-void process_1() { // ours
-	switch( pattern ) {
-		/****************************************************************
-        Pattern-related
-         00: wait for switch input
-		 01: check if start bar is open
-         10: drive
-		 20 - 29 : 90 degree turn
-		 30 - 39 : changing track right
-		 40 - 49 : changing track left
-        ****************************************************************/
-		case 00:
-			/* Wait for switch input */
-            if( pushsw_get() ) {
-                //pattern = 01;
-				pattern = 10; // straight to 10 for now, no startbar checking
-				led_out( 0x0 );
-                cnt0 = 0;
-                break;
-            }
-            if( cnt0 < 100 ) {          /* LED flashing processing     */
-                led_out( 0x1 );
-            } else if( cnt0 < 200 ) {
-                led_out( 0x2 );
-            } else {
-                cnt0 = 0;
-            }
-            break;
-			
-		case 01:
-            /* Check if start bar is open */
-            if( !startbar_get() ) {
-                /* Start!! */
-                led_out( 0x0 );
-                pattern = 10;
-                cnt0 = 0;
-                break;
-            }
-            if( cnt0 < 50 ) {           /* LED flashing processing     */
-                led_out( 0x1 );
-            } else if( cnt0 < 100 ) {
-                led_out( 0x2 );
-            } else {
-                cnt0 = 0;
-            }
-            break;
-		case 10:
-			
-			// all two diodies blink
-			led_out( 0x3 );
-			
-			/* Drive */
-			if( check_crossline() ) {   // Cross line check            
-                pattern = 20;
-                break;
-            }
-            if( check_rightline() ) {   // Right half line detection check
-                pattern = 30;
-                break;
-            }
-            if( check_leftline() ) {    // Left half line detection check
-                pattern = 40;
-                break;
-            }
-			if ( check_noline() ) {
-				// stop
-				accele_l = 0;
-				accele_r = 0;
-				break;
-			}
-				
-		   break;
-		  
-		case 20:
-			// ne znamo jos, skretanje po 90 stepeni (levo, desno? brojimo...)
-			
-			if ( check_noline() ) {
-				// stop
-				accele_l = 0;
-				accele_r = 0;
-				break;
-			}
-			
-			break;
-			
-		case 30:
-			// videli smo jedan RIGHTLINE
-			if (sensor_inp(MASK3_3) == 0x00)
-				pattern = 31;
-			break;
-			
-		case 31:
-			// cekamo drugi RIGHTLINE
-			if (check_rightline())
-				pattern = 32;
-			break;
-		
-		case 32:
-			// videli smo i drugi RIGHTLINE
-			if (sensor_inp(MASK3_3) == 0x00)
-				pattern = 33;
-			break;
-		
-		case 33:
-		
-			// diode 1 blinks
-			led_out( 0x1 );
-			
-			// CHANGE LANE, RIGHT
-			if (sensor_inp(MASK4_4) == 0x00) { // all black
-				pattern = 34;
-			}
-			break;
-			
-		case 34:
-			// wait for the line, then turn left
-			if (sensor_inp(0x18) == 0x18) { // wait for the 2 central LEDs
-				pattern = 35;
-			}
-			break;
-			
-		case 35:
-			if (sensor_inp(MASK3_3) == 0x00) { // wait for the formula to catch the line properly, then go back to pattern 10
-				pattern = 10;
-			}
-			
-		
-		case 40:
-			// videli smo jedan LEFTLINE
-			if (sensor_inp(MASK3_3) == 0x00)
-				pattern = 41;
-			break;
-			
-		case 41:
-			// cekamo drugi LEFTLINE
-			if (check_leftline())
-				pattern = 42;
-			break;
-		
-		case 42:
-			// videli smo i drugi LEFTLINE
-			if (sensor_inp(MASK3_3) == 0x00)
-				pattern = 43;
-			break;
-		
-		case 43:
-			// diode 2 blinks
-			led_out( 0x2 );
-			
-			// CHANGE LANE, LEFT
-			if (sensor_inp(MASK4_4) == 0x00) { // all black
-				pattern = 44;
-			}
-			break;
-			
-		case 44:
-			// wait for the line, then turn right
-			if (sensor_inp(0x18) == 0x18) { // wait for the 2 central LEDs
-				pattern = 45;
-			}
-			break;
-			
-		case 45:
-			if (sensor_inp(MASK3_3) == 0x00) { // wait for the formula to catch the line properly, then go back to pattern 10
-				pattern = 10;
-			}
-		
-		default:
-		   break;
 	}
 }
