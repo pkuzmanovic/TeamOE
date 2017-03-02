@@ -16,6 +16,7 @@ extern volatile int sensor_filtered;
 int BROJAC = 0;
 
 void process_1() { // ours
+
 	switch( pattern ) {
 		/****************************************************************
         Pattern-related
@@ -99,6 +100,9 @@ void process_1() { // ours
 		case 20:
 			// ne znamo jos, skretanje po 90 stepeni (levo, desno? brojimo...)
 			
+			// turn off both diodes
+			led_out( 0x0 );
+			
 			// videli smo jedan CROOSSLINE
 			if (sensor_inp(MASK3_3) == 0x00)
 				pattern = 21;
@@ -117,8 +121,6 @@ void process_1() { // ours
 			break;
 		
 		case 23:
-			// turn off both diodes
-			led_out( 0x0 );
 			
 			// TURN 90, left/right?
 			if ( check_leftline() ) {
@@ -165,21 +167,23 @@ void process_1() { // ours
 			
 		case 28:
 			// wait for the line, then continue to drive
-			if (sensor_inp(MASK4_4) == 0x18) { // wait for the 2 central LEDs
+			if (sensor_filtered /*sensor_inp(MASK4_4)*/ == 0x18) { // wait for the 2 central LEDs
 				pattern = 10;
 			}
 			break;
 		
 		case 29:
 			// wait for the line, then continue to drive
-			if (sensor_inp(MASK4_4) == 0x18) { // wait for the 2 central LEDs
+			if (sensor_filtered /*sensor_inp(MASK4_4)*/ == 0x18) { // wait for the 2 central LEDs
 				pattern = 10;
 			}
 			break;
 		
 		case 30:
+			// diode 1 blinks
+			led_out( 0x1 );
 			// videli smo jedan RIGHTLINE
-			if (sensor_inp(MASK3_3) == 0x00)
+			if (sensor_filtered /*sensor_inp(MASK4_4)*/ == 0x18 /*sensor_inp(MASK3_3) == 0x00*/)
 				pattern = 31;
 			break;
 			
@@ -191,17 +195,16 @@ void process_1() { // ours
 		
 		case 32:
 			// videli smo i drugi RIGHTLINE
-			if (sensor_inp(MASK3_3) == 0x00)
+			if (sensor_filtered /*sensor_inp(MASK4_4)*/ == 0x18 /*sensor_inp(MASK3_3) == 0x00*/)
 				pattern = 33;
 			break;
 		
 		case 33:
 		
-			// diode 1 blinks
-			led_out( 0x1 );
+		
 			
 			// CHANGE LANE, RIGHT
-			if (sensor_inp(MASK4_4) == 0x00) { // all black
+			if (sensor_filtered /*sensor_inp(MASK4_4)*/ == 0x00 /*sensor_inp(MASK4_4) == 0x00*/) { // all black
 				pattern = 34;
 			}
 			break;
@@ -220,8 +223,10 @@ void process_1() { // ours
 			
 		
 		case 40:
+			// diode 2 blinks
+			led_out( 0x2 );
 			// videli smo jedan LEFTLINE
-			if (sensor_inp(MASK3_3) == 0x00)
+			if (sensor_filtered /*sensor_inp(MASK4_4)*/ == 0x18 /*sensor_inp(MASK3_3) == 0x00*/)
 				pattern = 41;
 			break;
 			
@@ -233,16 +238,15 @@ void process_1() { // ours
 		
 		case 42:
 			// videli smo i drugi LEFTLINE
-			if (sensor_inp(MASK3_3) == 0x00)
+			if (sensor_filtered /*sensor_inp(MASK4_4)*/ == 0x18 /*sensor_inp(MASK3_3) == 0x00*/)
 				pattern = 43;
 			break;
 		
 		case 43:
-			// diode 2 blinks
-			led_out( 0x2 );
+			
 			
 			// CHANGE LANE, LEFT
-			if (sensor_inp(MASK4_4) == 0x00) { // all black
+			if (sensor_filtered /*sensor_inp(MASK4_4)*/ == 0x00 /*sensor_inp(MASK4_4) == 0x00*/) { // all black
 				pattern = 44;
 			}
 			break;

@@ -18,8 +18,10 @@
 #define MASK1_4         0x1f            /* X X X O  O O O O            */
 
 #define CROSSLINE		0xff 			/* X X X X  X X X X            */
-#define RIGHTLINE		0x1f		  	/* O O O X  X X X X            */
-#define LEFTLINE		0xf8            /* X X X X  X O O O            */
+#define RIGHTLINE1		0x1f		  	/* O O O X  X X X X            */
+#define LEFTLINE1		0xf8            /* X X X X  X O O O            */
+#define RIGHTLINE2		0x0f		  	/* O O O O  X X X X            */
+#define LEFTLINE2		0xf0            /* X X X X  O O O O            */
 #define NOLINE			0x00            /* 0 0 0 0  0 O O O            */
 
 unsigned char sensor_inp( unsigned char mask );

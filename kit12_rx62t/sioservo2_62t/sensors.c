@@ -67,7 +67,7 @@ int check_rightline( void )
     ret = 0;
    // b = sensor_inp(MASK1_4 /*MASK4_4*/);
 	b = sensor_filtered;
-    if( b==RIGHTLINE ) {
+    if(  b==RIGHTLINE1 || b==RIGHTLINE2 ) {
         ret = 1;
     }
     return ret;
@@ -85,7 +85,7 @@ int check_leftline( void )
     ret = 0;
     //b = sensor_inp(MASK4_1 /*MASK4_4*/);
 	b = sensor_filtered;
-    if( b==LEFTLINE ) {
+    if( b==LEFTLINE1 || b==LEFTLINE2 ) {
         ret = 1;
     }
     return ret;

@@ -7,10 +7,10 @@
 
 #include "iodefine.h"
 
-#define K 1
+#define K 2
 
 // filtering buffer length
-#define BUFF_LENGTH 9
+#define BUFF_LENGTH 3
 
 volatile unsigned long cnt0 = 0;
 volatile unsigned long cnt1 = 0;
@@ -225,13 +225,13 @@ void Excep_CMT0_CMI0(void)
 				// bas skreni udesno
 
                case 0x07:
-			   	   angle = 30*K;
+			   	   angle = 22*K; //30*K;
 				   accele_l = 50;
 				   accele_r = 38;
 				   break;
 			   
 			   case 0x02:
-			   	   angle = 30*K;
+			   	   angle = 22*K; //30*K;
 				   accele_l = 50;
 				   accele_r = 38;
 				   break;
@@ -239,13 +239,13 @@ void Excep_CMT0_CMI0(void)
 				// bas skreni ulevo
 			   
 			   case 0xe0:
-			    	angle = -30*K;
+			    	angle = -22*K; ///-30*K;
 					accele_l = 38;
 				  	accele_r = 50;
                     break;
 			  
 			   case 0x40:
-			   	   angle = -30*K;
+			   	   angle = -22*K; //-30*K;
 				   accele_l = 38;
 				   accele_r = 50;
 				   break;
@@ -254,28 +254,28 @@ void Excep_CMT0_CMI0(void)
 				   
 			   case 0x03:
 			   	   // otisao previse desno od centra, skreni levo (?)
-			   	   angle = 40*K;
+			   	   angle = 40; //40*K;
 				   accele_l = 38;
 				   accele_r = 50;
 				   break;
 			  
 			   case 0x01:
 			   	   // otisao previse desno od centra, skreni levo (?)
-			   	   angle = 40*K;
-				   accele_l = 38;
+			   	   angle = 40; //40*K;
+				   accele_l = 38;\
 				   accele_r = 50;
 				   break;
 				   		   	   
 			   case 0xc0:
 			   		// otisao previse levo od centra, skreni desno (?)
-			   		angle = -40*K;
+			   		angle = -40; //-40*K;
 					accele_l = 50;
 				    accele_r = 38;
 				    break;
 			   
 			   case 0x80:
 			   		// otisao previse levo od centra, skreni desno (?)
-			   		angle = -40*K;
+			   		angle = -40; //-40*K;
 					accele_l = 50;
 				    accele_r = 38;
 				    break;
@@ -295,6 +295,42 @@ void Excep_CMT0_CMI0(void)
 		case 23: // TURN 90, left/right?
 			accele_l = 40;
 			accele_r = 40;
+			switch( sensor_filtered) {
+               case 0x18:
+                   angle = 0;				   
+				   break;
+				
+				// skreni malo udesno
+			
+			   case 0x0c:
+                   angle = 8*K;
+				   break;
+				   
+               case 0x08:
+                   angle = 6*K;
+				   break;
+				
+			   case 0x1c:
+                   angle = 4*K;
+				   break;
+				   
+				// skreni malo ulevo
+			
+			   case 0x30:
+                   angle = -8*K;
+                   break;
+				   
+			   case 0x10:
+                   angle = -6*K;
+                   break;
+				   
+               case 0x38:
+                   angle = -4*K;
+                   break;
+				default:
+					angle = 0;
+					break;
+			}
 			break;
 		
 		/*case 24:
@@ -323,15 +359,15 @@ void Excep_CMT0_CMI0(void)
 			
 			
 		case 28: // TURN 90, right!
-			accele_l = 25;
-			accele_r = 50;
-			angle = -35;
+			accele_l = 20;
+			accele_r = 90;
+			angle = -40;
 			break;
 			
 		case 29: // TURN 90, left!
-			accele_l = 50;
-			accele_r = 25;
-			angle = 35;
+			accele_l = 90;
+			accele_r = 20;
+			angle = 40;
 			break;
 		
 		
@@ -342,14 +378,14 @@ void Excep_CMT0_CMI0(void)
 			accele_r = 60;
 			break;
 		case 34: // all black, turn right
-			accele_l = 50;
-			accele_r = 38;
+			accele_l = 70; //50;
+			accele_r = 30; //38;
 			angle = +15*2;
 		    break;
 		case 35: // caught the line, turn left
 			//angle = 0;//-15*2;
-			accele_l = 38;
-			accele_r = 50;
+			accele_l = 50; //38;
+			accele_r = 70; //50;
 			angle = -15;
 		    break;
 		case 43: // change lane, left
@@ -359,14 +395,14 @@ void Excep_CMT0_CMI0(void)
 			accele_r = 60;
 			break;
 		case 44: // all black, turn left
-			accele_l = 38;
-			accele_r = 50;
+			accele_l = 30; //38;
+			accele_r = 70; //50;
 			angle = -15*2;
 		    break;
 		case 45: // caught the line, turn right
 			//angle = 0;//+15*2;
-			accele_l = 50;
-			accele_r = 38;
+			accele_l = 70; //50;
+			accele_r = 50; //38;
 			angle = +15;
 		    break;
 		default:
