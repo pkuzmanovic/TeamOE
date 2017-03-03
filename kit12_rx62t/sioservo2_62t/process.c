@@ -172,11 +172,11 @@ void process_1() { // ours
                    break;
 				   
 			   case 0x10:
-                   angle = -6*K;
+                   angle = -6;
                    break;
 				   
                case 0x38:
-                   angle = -4*K;
+                   angle = -4;
                    break;
 				default:
 					angle = 0;
@@ -207,11 +207,11 @@ void process_1() { // ours
 			break;
 		
 		case 25: // TURN 90, left!
-			accele_l = 30;
+			accele_l = 20;
 			accele_r = 90;
 			angle = -40;
 		
-			if ( (sensor_filtered & 0x18) == 0x18 ) {
+			if ( ( sensor_filtered & 0x30) == 0x30 ) {
 				pattern = 10;
 			}
 			break;
@@ -229,10 +229,10 @@ void process_1() { // ours
 			
 		case 27: // TURN 90, right!
 			accele_l = 90;
-			accele_r = 30;
+			accele_r = 20;
 			angle = 40;
 					
-			if ( (sensor_filtered & 0x18) == 0x18 ) {
+			if ( (sensor_filtered & 0x0c) == 0x0c ) {
 				pattern = 10;
 			}
 			break;

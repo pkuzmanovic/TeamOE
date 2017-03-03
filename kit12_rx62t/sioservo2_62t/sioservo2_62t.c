@@ -8,7 +8,7 @@
 #include "iodefine.h"
 
 // filtering buffer length
-#define BUFF_LENGTH 5
+#define BUFF_LENGTH 13
 
 volatile unsigned long cnt0 = 0;
 volatile unsigned long cnt1 = 0;
