@@ -27,6 +27,7 @@
 #define RIGHTLINE2		0x0f		  	/* O O O O  X X X X            */
 #define LEFTLINE2		0xf0            /* X X X X  O O O O            */
 #define NOLINE			0x00            /* 0 0 0 0  0 O O O            */
+#define STRAIGHTLINE    0x18			/* 0 0 0 X  X O O O            */
 
 
 /*
@@ -70,6 +71,13 @@ int check_leftline( void );
 
 /*
  * Proverava kada ne postoji linije
+ *
+ * Output: ON/OFF
+ */
+int check_noline( void );
+
+/*
+ * Detektuje centralnu liniju
  *
  * Output: ON/OFF
  */

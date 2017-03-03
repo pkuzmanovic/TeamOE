@@ -14,6 +14,7 @@ void motor( int accele_l, int accele_r )
    //accele_l = accele_l/2;
    //accele_r = accele_r/2;
    
+   
    accele_l = 3*accele_l/4;
    accele_r = 3*accele_r/4;
    

@@ -67,8 +67,8 @@ void init_hw(void)
 	
     CMT0.CMCR.WORD      = 0x00C3;           //PCLK/512
     CMT0.CMCNT          = 0;
-    //CMT0.CMCOR          = 96;               //1ms/(1/(49.152MHz/512))
-	CMT0.CMCOR          = 960;               //10ms/(1/(49.152MHz/512))
+    CMT0.CMCOR          = 96;               //1ms/(1/(49.152MHz/512))
+	//CMT0.CMCOR          = 960;               //10ms/(1/(49.152MHz/512))
 	//CMT0.CMCOR          = 480;               //5ms/(1/(49.152MHz/512))
 	
 	//***********

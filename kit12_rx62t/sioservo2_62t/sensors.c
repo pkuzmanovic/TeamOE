@@ -96,11 +96,23 @@ int check_noline( void )
     unsigned char b;
     int ret = 0;
 
-    //ret = 0;
 	b = sensor_filtered;
     if( b==NOLINE ) {
         ret = 1;
     }
     return ret;
+}
+
+int check_straightline( void ) {
+	
+	unsigned char b;
+    int ret = 0;
+
+	b = sensor_filtered;
+    if( b==STRAIGHTLINE ) {
+        ret = 1;
+    }
+    return ret;
+	
 }
 
